@@ -1,35 +1,29 @@
-import gradio as gr
+import streamlit as st
 import joblib
+
 
 model = joblib.load("bearing_model.pkl")
 
 
-def predict_fault(rpm, temperature, vibration, load):
+st.title("AI Based Bearing Fault Prediction")
+
+
+rpm = st.number_input("RPM")
+
+temperature = st.number_input("Temperature °C")
+
+vibration = st.number_input("Vibration")
+
+load = st.number_input("Load")
+
+
+if st.button("Predict"):
 
     result = model.predict(
         [[rpm, temperature, vibration, load]]
     )
 
     if result[0] == 1:
-        return "⚠ Bearing Fault Detected"
+        st.error("⚠ Bearing Fault Detected")
     else:
-        return "✅ Bearing Healthy"
-
-
-app = gr.Interface(
-    fn=predict_fault,
-
-    inputs=[
-        gr.Number(label="RPM"),
-        gr.Number(label="Temperature °C"),
-        gr.Number(label="Vibration"),
-        gr.Number(label="Load")
-    ],
-
-    outputs="text",
-
-    title="AI Based Bearing Fault Prediction"
-)
-
-
-app.launch()
+        st.success("✅ Bearing Healthy")
